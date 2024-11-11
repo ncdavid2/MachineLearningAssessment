@@ -4,10 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="f1243345-4df8-47eb-b06d-5c69917d74ec" name="Changes" comment="Fill Water Bill">
-      <change afterPath="$PROJECT_DIR$/FIllColumns.py" afterDir="false" />
+    <list default="true" id="f1243345-4df8-47eb-b06d-5c69917d74ec" name="Changes" comment="Fill Data">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/EditDataset.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/EditDataset.ipynb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/FIllColumns.py" beforeDir="false" afterPath="$PROJECT_DIR$/FIllColumns.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -45,20 +44,20 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "Python.FIllColumns.executor": "Run",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "git-widget-placeholder": "master",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "settings.editor.selected.configurable": "configurable.group.editor",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Python.FIllColumns.executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;master&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;configurable.group.editor&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
@@ -78,7 +77,8 @@
       <workItem from="1730125731599" duration="213000" />
       <workItem from="1730126030072" duration="100000" />
       <workItem from="1730126209639" duration="1098000" />
-      <workItem from="1730138723772" duration="2574000" />
+      <workItem from="1730138723772" duration="2737000" />
+      <workItem from="1731351898739" duration="356000" />
     </task>
     <task id="LOCAL-00001" summary="Fill Water Bill">
       <option name="closed" value="true" />
@@ -88,7 +88,15 @@
       <option name="project" value="LOCAL" />
       <updated>1730127297376</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="Fill Data">
+      <option name="closed" value="true" />
+      <created>1730142058439</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1730142058439</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -107,9 +115,10 @@
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="Fill Water Bill" />
-    <option name="LAST_COMMIT_MESSAGE" value="Fill Water Bill" />
+    <MESSAGE value="Fill Data" />
+    <option name="LAST_COMMIT_MESSAGE" value="Fill Data" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
-    <SUITE FILE_PATH="coverage/MachineLearningAssessment$FIllColumns.coverage" NAME="FIllColumns Coverage Results" MODIFIED="1730141867149" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/MachineLearningAssessment$FIllColumns.coverage" NAME="FIllColumns Coverage Results" MODIFIED="1731352247854" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
 </project>
