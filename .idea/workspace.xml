@@ -4,10 +4,14 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="f1243345-4df8-47eb-b06d-5c69917d74ec" name="Changes" comment="Fill Data">
-      <change afterPath="$PROJECT_DIR$/LSTM.py" afterDir="false" />
+    <list default="true" id="f1243345-4df8-47eb-b06d-5c69917d74ec" name="Changes" comment="Prediction Page">
+      <change afterPath="$PROJECT_DIR$/Pages/CorrelationAnalysisSection.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Pages/DecisionMakingSupport.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Pages/ExpenseClusteringSection.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Pages/ExploratoryDataAnalysis.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Pages/PredictionForecastingSection.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/EditDataset.ipynb" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/LSTM.py" beforeDir="false" afterPath="$PROJECT_DIR$/LSTM.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -92,7 +96,27 @@
       <workItem from="1733098669275" duration="1000" />
       <workItem from="1733102678569" duration="505000" />
       <workItem from="1733146515401" duration="3019000" />
-      <workItem from="1733150478671" duration="5157000" />
+      <workItem from="1733150478671" duration="5361000" />
+      <workItem from="1733158106224" duration="3000" />
+      <workItem from="1733159519670" duration="867000" />
+      <workItem from="1733160490156" duration="2092000" />
+      <workItem from="1733164853487" duration="2285000" />
+      <workItem from="1733224274653" duration="4000" />
+      <workItem from="1733224519473" duration="37000" />
+      <workItem from="1733225229900" duration="4000" />
+      <workItem from="1733226150817" duration="407000" />
+      <workItem from="1733234491697" duration="19000" />
+      <workItem from="1733236194566" duration="86000" />
+      <workItem from="1733238845503" duration="123000" />
+      <workItem from="1733241402058" duration="107000" />
+      <workItem from="1733351237669" duration="1085000" />
+      <workItem from="1733407783202" duration="3000" />
+      <workItem from="1733410782286" duration="344000" />
+      <workItem from="1733668698893" duration="7886000" />
+      <workItem from="1733742380485" duration="17893000" />
+      <workItem from="1733771544478" duration="1284000" />
+      <workItem from="1733773150277" duration="9000" />
+      <workItem from="1733775231074" duration="5040000" />
     </task>
     <task id="LOCAL-00001" summary="Fill Water Bill">
       <option name="closed" value="true" />
@@ -118,7 +142,15 @@
       <option name="project" value="LOCAL" />
       <updated>1731352263939</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL-00004" summary="Prediction Page">
+      <option name="closed" value="true" />
+      <created>1733158073746</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1733158073746</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -138,10 +170,11 @@
   <component name="VcsManagerConfiguration">
     <MESSAGE value="Fill Water Bill" />
     <MESSAGE value="Fill Data" />
-    <option name="LAST_COMMIT_MESSAGE" value="Fill Data" />
+    <MESSAGE value="Prediction Page" />
+    <option name="LAST_COMMIT_MESSAGE" value="Prediction Page" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/MachineLearningAssessment$FIllColumns.coverage" NAME="FIllColumns Coverage Results" MODIFIED="1733150625537" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/MachineLearningAssessment$LSTM.coverage" NAME="LSTM Coverage Results" MODIFIED="1733157211287" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/MachineLearningAssessment$LSTM.coverage" NAME="LSTM Coverage Results" MODIFIED="1733157984092" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
 </project>
