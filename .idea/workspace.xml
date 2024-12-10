@@ -4,14 +4,12 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="f1243345-4df8-47eb-b06d-5c69917d74ec" name="Changes" comment="Prediction Page">
-      <change afterPath="$PROJECT_DIR$/Pages/CorrelationAnalysisSection.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Pages/DecisionMakingSupport.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Pages/ExpenseClusteringSection.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Pages/ExploratoryDataAnalysis.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Pages/PredictionForecastingSection.py" afterDir="false" />
+    <list default="true" id="f1243345-4df8-47eb-b06d-5c69917d74ec" name="Changes" comment="Content Added For Each Page">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/LSTM.py" beforeDir="false" afterPath="$PROJECT_DIR$/LSTM.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Pages/CorrelationAnalysisSection.py" beforeDir="false" afterPath="$PROJECT_DIR$/Pages/CorrelationAnalysisSection.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Pages/DecisionMakingSupport.py" beforeDir="false" afterPath="$PROJECT_DIR$/Pages/DecisionMakingSupport.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Pages/ExploratoryDataAnalysis.py" beforeDir="false" afterPath="$PROJECT_DIR$/Pages/ExploratoryDataAnalysis.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Pages/PredictionForecastingSection.py" beforeDir="false" afterPath="$PROJECT_DIR$/Pages/PredictionForecastingSection.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -116,7 +114,10 @@
       <workItem from="1733742380485" duration="17893000" />
       <workItem from="1733771544478" duration="1284000" />
       <workItem from="1733773150277" duration="9000" />
-      <workItem from="1733775231074" duration="5040000" />
+      <workItem from="1733775231074" duration="5077000" />
+      <workItem from="1733838119203" duration="4251000" />
+      <workItem from="1733852394496" duration="808000" />
+      <workItem from="1733856460377" duration="9433000" />
     </task>
     <task id="LOCAL-00001" summary="Fill Water Bill">
       <option name="closed" value="true" />
@@ -150,7 +151,15 @@
       <option name="project" value="LOCAL" />
       <updated>1733158073746</updated>
     </task>
-    <option name="localTasksCounter" value="5" />
+    <task id="LOCAL-00005" summary="Content Added For Each Page">
+      <option name="closed" value="true" />
+      <created>1733781339945</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1733781339945</updated>
+    </task>
+    <option name="localTasksCounter" value="6" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -171,7 +180,8 @@
     <MESSAGE value="Fill Water Bill" />
     <MESSAGE value="Fill Data" />
     <MESSAGE value="Prediction Page" />
-    <option name="LAST_COMMIT_MESSAGE" value="Prediction Page" />
+    <MESSAGE value="Content Added For Each Page" />
+    <option name="LAST_COMMIT_MESSAGE" value="Content Added For Each Page" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/MachineLearningAssessment$FIllColumns.coverage" NAME="FIllColumns Coverage Results" MODIFIED="1733150625537" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />

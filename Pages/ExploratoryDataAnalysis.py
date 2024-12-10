@@ -56,9 +56,31 @@ def exploratory_data_analysis():
             # Proceed with the prediction code for the selected employee
             employee_data = data[data['Employee'] == selected_employee]
 
+            # Get the first month's expense as the base
+            first_month_expense = employee_data[selected_expense].iloc[0]
+            st.write(f"First Month's {selected_expense}: £{first_month_expense:.2f}")
+
+            # Input fields for next two months' expenses
+            st.write("Enter your expected expenses for the next two months:")
+            next_month_expense = st.number_input(
+                "Next month expense (£):",
+                min_value=0.0,
+                value=first_month_expense,
+                step=0.01
+            )
+            second_month_expense = st.number_input(
+                "Second month expense (£):",
+                min_value=0.0,
+                value=first_month_expense,
+                step=0.01
+            )
+
             # Prepare data for the selected employee
-            X = np.array(range(len(employee_data))).reshape(-1, 1)
-            y = employee_data[selected_expense].values
+            X = np.array(range(len(employee_data) + 2)).reshape(-1, 1)
+            y = np.concatenate([
+                employee_data[selected_expense].values,
+                [next_month_expense, second_month_expense]
+            ])
 
             # Create and train a linear regression model
             model = LinearRegression()
@@ -66,13 +88,30 @@ def exploratory_data_analysis():
 
             # Make predictions for future months
             future_months = st.slider("Predict expenses for next n months:", 1, 12, 3)
-            future_X = np.array(range(len(employee_data), len(employee_data) + future_months)).reshape(-1, 1)
+            future_X = np.array(range(len(X), len(X) + future_months)).reshape(-1, 1)
             predictions = model.predict(future_X)
 
-            # Plot the predictions
-            fig_pred = px.line(x=range(len(employee_data) + future_months), y=list(y) + list(predictions),
-                               title=f"{selected_expense} Trend and Prediction for {selected_employee}")
-            fig_pred.add_vline(x=len(employee_data) - 1, line_dash="dash", annotation_text="Prediction Start")
+            # Plot the historical data, user inputs, and predictions
+            historical_data = employee_data[selected_expense].values
+            full_data = np.concatenate([historical_data, [next_month_expense, second_month_expense], predictions])
+
+            fig_pred = px.line(
+                x=range(len(full_data)),
+                y=full_data,
+                title=f"{selected_expense} Trend and Prediction for {selected_employee}"
+            )
+
+            # Add vertical lines to distinguish different sections
+            fig_pred.add_vline(
+                x=len(historical_data) - 1,
+                line_dash="dash",
+                annotation_text="Bill Months Given"
+            )
+            fig_pred.add_vline(
+                x=len(historical_data) + 1,
+                line_dash="dash",
+                annotation_text="Predictions"
+            )
             st.plotly_chart(fig_pred)
 
             # Display predicted values
@@ -106,12 +145,15 @@ def exploratory_data_analysis():
     elif selected_visualization == "Income vs Expenses":
         st.subheader("Income vs Expenses")
         try:
-            # Calculate total expenses and savings for each employee
-            data['Total Expenses'] = data[
-                ['Electricity Bill (£)', 'Gas Bill (£)', 'Netflix (£)', 'Amazon Prime (£)', 'Groceries (£)',
-                 'Transportation (£)', 'Water Bill (£)', 'Sky Sports (£)', 'Other Expenses (£)',
-                 'Monthly Outing (£)']].sum(axis=1)
-            data['Savings'] = data['Monthly Income (£)'] - data['Total Expenses']
+            # Calculate total expenses for each employee
+            expense_columns = ['Electricity Bill (£)', 'Gas Bill (£)', 'Netflix (£)', 'Amazon Prime (£)',
+                               'Groceries (£)',
+                               'Transportation (£)', 'Water Bill (£)', 'Sky Sports (£)', 'Other Expenses (£)',
+                               'Monthly Outing (£)']
+            data['Total Expenses'] = data[expense_columns].sum(axis=1)
+
+            # Total Savings
+            data['Savings'] = data['Savings for Property (£)']
 
             # Create a grouped bar chart of income, expenses, and savings
             fig = px.bar(data, x='Employee', y=['Monthly Income (£)', 'Total Expenses', 'Savings'],
@@ -119,8 +161,10 @@ def exploratory_data_analysis():
             st.plotly_chart(fig)
 
             # Calculate and display average savings percentage
-            savings_percentage = (data['Savings'] / data['Monthly Income (£)'] * 100).mean()
-            st.write(f"Average Savings Percentage: {savings_percentage:.2f}%")
+            data['Savings Percentage'] = (data['Savings'] / data['Monthly Income (£)'] * 100)
+            avg_savings_percentage = data['Savings Percentage'].mean()
+            st.write(f"Average Savings Percentage: {avg_savings_percentage:.2f}%")
+
         except Exception as e:
             st.error(f"Error plotting income vs expenses: {e}")
 

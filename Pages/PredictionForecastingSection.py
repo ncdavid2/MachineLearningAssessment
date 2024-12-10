@@ -3,130 +3,129 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 
-
 def prediction_forecasting():
     st.title("Salary Prediction & Forecasting for Individual Employee")
 
-    # Check if data has been uploaded
     if 'uploaded_data' not in st.session_state:
         st.error("No data uploaded. Please upload a CSV file on the main page.")
         return
 
-    # Load the uploaded data from the session state
     data = st.session_state['uploaded_data']
 
-    # Create sidebar filters for employee selection
     if 'Employee' in data.columns:
         unique_employees = data['Employee'].unique()
-        selected_employee = st.sidebar.selectbox("Select Employee for Prediction:", unique_employees)
+        selected_employee = st.selectbox("Select Employee for Prediction:", unique_employees)
 
-        # Filter data for the selected employee
         employee_data = data[data['Employee'] == selected_employee]
 
         if employee_data.empty:
             st.error("No data found for the selected employee.")
             return
 
-        # Get the current monthly income
         current_monthly_income = employee_data['Monthly Income (£)'].iloc[0]
-
     else:
         st.warning("No 'Employee' column found in the data.")
         return
 
-    # Display current monthly income
-    st.write(f"Current Monthly Income for {selected_employee}: £{current_monthly_income:.2f}")
+    # Display current monthly income (first month)
+    st.write(f"Month 1 Income for {selected_employee}: £{current_monthly_income:.2f}")
 
-    # Set parameters for forecasting
-    annual_increase_rate = 0.03  # 3% annual increase
-    initial_forecast_months = 12  # Forecasting for initial 12 months
-    extended_forecast_months = 48  # Additional forecasting for 4 years (48 months)
+    # Input fields for the second and third months
+    month2_income = st.number_input("Month 2 Income (£):", value=float(current_monthly_income), step=0.01)
+    month3_income = st.number_input("Month 3 Income (£):", value=float(current_monthly_income), step=0.01)
 
-    # Input for custom increases for all 12 months
-    st.sidebar.header("Custom Salary Increases")
-    custom_increases = {}
+    # Calculate average monthly change
+    avg_monthly_change = (month3_income - current_monthly_income) / 2
 
-    for month in range(1, 13):  # Allowing input for all twelve months
-        increase_amount = st.sidebar.number_input(f"Increase Amount for Month {month} (£):", min_value=0.0)
-        custom_increases[month] = increase_amount
+    # Generate predictions for 48 months
+    forecasted_salaries = [current_monthly_income, month2_income, month3_income]
+    for month in range(4, 49):
+        next_salary = forecasted_salaries[-1] + avg_monthly_change
+        forecasted_salaries.append(next_salary)
 
-    # Calculate forecasted monthly income for initial 12 months
-    forecasted_salaries_12_months = []
-    forecasted_salaries_48_months = []
+    # Display line chart
+    plt.figure(figsize=(16, 8))
 
-    current_salary = current_monthly_income
-
-    # Calculate salaries for initial 12 months with adjustment logic
-    for month in range(1, initial_forecast_months + 1):
-        if month % 12 == 0:
-            current_salary *= (1 + annual_increase_rate)
-
-        # Apply custom increase and store salary before applying next month's logic
-        previous_salary = current_salary
-        current_salary += custom_increases.get(month, 0)
-
-        forecasted_salaries_12_months.append(current_salary)
-
-        # Revert to previous salary after applying increase
-        if custom_increases.get(month, 0) > 0:
-            current_salary = previous_salary
-
-    # Calculate salaries for extended 4 years (48 months)
-    for month in range(1, extended_forecast_months + 1):
-        if month % 12 == 0:
-            current_salary *= (1 + annual_increase_rate)
-
-        forecasted_salaries_48_months.append(current_salary)
-
-    # Combine both forecasts into one list for plotting
-    total_forecasted_salaries = forecasted_salaries_12_months + forecasted_salaries_48_months
-
-    # Display line chart with improved readability and spacing
-    plt.figure(figsize=(16, 8))  # Increased size of the plot
-
-    x_values = range(1, initial_forecast_months + extended_forecast_months + 1)
-
-    plt.plot(x_values[:initial_forecast_months], forecasted_salaries_12_months, marker='o', linestyle='-', color='b',
-             label='Forecast (Next 12 Months)', markersize=8)
-
-    plt.plot(x_values[initial_forecast_months:], forecasted_salaries_48_months, marker='o', linestyle='-',
-             color='orange',
-             label='Forecast (Next 4 Years)', markersize=8)
+    x_values = range(1, 49)
+    plt.plot(x_values[:3], forecasted_salaries[:3], marker='o', linestyle='-', color='b', markersize=8, label='Input Months')
+    plt.plot(x_values[3:], forecasted_salaries[3:], marker='o', linestyle='-', color='green', markersize=8, label='Predicted Months')
 
     plt.title(f"Forecasted Monthly Salaries for {selected_employee}", fontsize=20)
-
     plt.xlabel("Month", fontsize=16)
     plt.ylabel("Salary (£)", fontsize=16)
-
-    plt.xticks(x_values, [str(i) for i in x_values], fontsize=14)  # Just numbers on x-axis without "Month"
-
-    plt.xticks(rotation=45)  # Rotate x-axis labels to avoid overlap
-
+    plt.xticks(x_values, [str(i) for i in x_values], fontsize=14, rotation=45)
     plt.grid(True)
+    plt.legend()
 
-    plt.legend(fontsize=14)
-
-    # Set limits to center lines better within plot area
-    max_salary = max(total_forecasted_salaries) * 1.1  # Add some space above max salary
-    min_salary = min(total_forecasted_salaries) * 0.9  # Add some space below min salary
-
+    max_salary = max(forecasted_salaries) * 1.1
+    min_salary = min(forecasted_salaries) * 0.9
     plt.ylim(min_salary, max_salary)
 
-    # Show plot in Streamlit app above salary forecasts
     st.pyplot(plt)
 
-    # Display forecasted salaries and total salary with bonus
-    st.write(f"Forecasted Monthly Salaries for {selected_employee}:")
+    # Display predictions for years 1, 2, 3, and 4
+    st.subheader("Salary Predictions for Years 1-4")
+    col1, col2, col3, col4 = st.columns(4)
 
-    # Displaying only the first year (12 months) separately
-    for month, salary in enumerate(forecasted_salaries_12_months, start=1):
-        st.write(f"Month {month}: £{salary:.2f}")
+    with col1:
+        st.write("Year 1 (Month 12)")
+        st.write(f"£{forecasted_salaries[0]:.2f}")
+        st.write(f"£{forecasted_salaries[1]:.2f}")
+        st.write(f"£{forecasted_salaries[2]:.2f}")
+        st.write(f"£{forecasted_salaries[3]:.2f}")
+        st.write(f"£{forecasted_salaries[4]:.2f}")
+        st.write(f"£{forecasted_salaries[5]:.2f}")
+        st.write(f"£{forecasted_salaries[6]:.2f}")
+        st.write(f"£{forecasted_salaries[7]:.2f}")
+        st.write(f"£{forecasted_salaries[8]:.2f}")
+        st.write(f"£{forecasted_salaries[9]:.2f}")
+        st.write(f"£{forecasted_salaries[10]:.2f}")
+        st.write(f"£{forecasted_salaries[11]:.2f}")
 
-    # Displaying total salary including a bonus (the extra month's salary)
-    total_salary_with_bonus = sum(forecasted_salaries_12_months) + current_monthly_income
-    st.write(f"\nTotal Salary Including Current Month Bonus: £{total_salary_with_bonus:.2f}")
+    with col2:
+        st.write("Year 2 (Month 24)")
+        st.write(f"£{forecasted_salaries[12]:.2f}")
+        st.write(f"£{forecasted_salaries[13]:.2f}")
+        st.write(f"£{forecasted_salaries[14]:.2f}")
+        st.write(f"£{forecasted_salaries[15]:.2f}")
+        st.write(f"£{forecasted_salaries[16]:.2f}")
+        st.write(f"£{forecasted_salaries[17]:.2f}")
+        st.write(f"£{forecasted_salaries[18]:.2f}")
+        st.write(f"£{forecasted_salaries[19]:.2f}")
+        st.write(f"£{forecasted_salaries[20]:.2f}")
+        st.write(f"£{forecasted_salaries[21]:.2f}")
+        st.write(f"£{forecasted_salaries[22]:.2f}")
+        st.write(f"£{forecasted_salaries[23]:.2f}")
 
+    with col3:
+        st.write("Year 3 (Month 36)")
+        st.write(f"£{forecasted_salaries[24]:.2f}")
+        st.write(f"£{forecasted_salaries[25]:.2f}")
+        st.write(f"£{forecasted_salaries[26]:.2f}")
+        st.write(f"£{forecasted_salaries[27]:.2f}")
+        st.write(f"£{forecasted_salaries[28]:.2f}")
+        st.write(f"£{forecasted_salaries[29]:.2f}")
+        st.write(f"£{forecasted_salaries[30]:.2f}")
+        st.write(f"£{forecasted_salaries[31]:.2f}")
+        st.write(f"£{forecasted_salaries[32]:.2f}")
+        st.write(f"£{forecasted_salaries[33]:.2f}")
+        st.write(f"£{forecasted_salaries[34]:.2f}")
+        st.write(f"£{forecasted_salaries[35]:.2f}")
 
-# Run the main function when the script is executed
+    with col4:
+        st.write("Year 4 (Month 48)")
+        st.write(f"£{forecasted_salaries[36]:.2f}")
+        st.write(f"£{forecasted_salaries[37]:.2f}")
+        st.write(f"£{forecasted_salaries[38]:.2f}")
+        st.write(f"£{forecasted_salaries[39]:.2f}")
+        st.write(f"£{forecasted_salaries[40]:.2f}")
+        st.write(f"£{forecasted_salaries[41]:.2f}")
+        st.write(f"£{forecasted_salaries[42]:.2f}")
+        st.write(f"£{forecasted_salaries[43]:.2f}")
+        st.write(f"£{forecasted_salaries[44]:.2f}")
+        st.write(f"£{forecasted_salaries[45]:.2f}")
+        st.write(f"£{forecasted_salaries[46]:.2f}")
+        st.write(f"£{forecasted_salaries[47]:.2f}")
+
 if __name__ == "__main__":
     prediction_forecasting()
