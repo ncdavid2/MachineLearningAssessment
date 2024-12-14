@@ -12,32 +12,51 @@ def decision_making_support():
         st.error("No data uploaded.")
         return
 
-    # Current Savings
-    st.subheader("Current Savings Analysis")
-    target_col = 'Savings for Property (£)'
+    # Monthly Income
+    st.subheader("Monthly Savings Analysis")
+    income_col = 'Monthly Income (£)'
+
+    if 'Employee' in data.columns:
+        unique_employees = data['Employee'].unique()
+        selected_employee = st.selectbox("Select Employee for Prediction:", unique_employees)
+
+        employee_data = data[data['Employee'] == selected_employee]
+
+        if employee_data.empty:
+            st.error("No data found for the selected employee.")
+            return
+
+        monthly_income = employee_data[income_col].iloc[0]
+    else:
+        st.warning("No 'Employee' column found in the data.")
+        return
 
     try:
-        current_savings = data[target_col].iloc[-1]  # Get the latest savings value
-
         # Set Savings Goal
         savings_goal = st.number_input("Set Your Savings Target (£):", min_value=0.0, step=100.0)
 
     except Exception as e:
-        st.error(f"Error retrieving current savings: {e}")
+        st.error(f"Error retrieving monthly income: {e}")
 
     # Interactivity and Real-Time Updates
-    st.subheader("Adjust Current Savings")
+    st.subheader("Adjust savings from the Monthly Income")
     try:
-        real_time_savings = st.slider("Adjust Current Savings (£):", min_value=0, max_value=int(current_savings + 5000),
-                                      value=int(current_savings))
-        updated_goal_status = "Met" if real_time_savings >= savings_goal else "Not Met"
+        real_time_income = st.slider(
+            "Adjust Savings:",
+            min_value=0,
+            max_value=int(monthly_income),
+            value=int(),
+        )
+
+        current_savings = real_time_income
+
+        updated_goal_status = "Met" if current_savings >= savings_goal else "Not Met"
         st.write(f"Updated Goal Status: {updated_goal_status}")
 
         if updated_goal_status == "Not Met":
-            remaining_amount = savings_goal - real_time_savings
+            remaining_amount = savings_goal - current_savings
             st.warning(f"You still need to save £{remaining_amount:.2f} to meet your target.")
 
-            # Calculate required monthly, weekly, and daily savings based on adjusted savings
             if remaining_amount > 0:
                 monthly_contribution_adjusted = remaining_amount / 12
                 weekly_contribution_adjusted = remaining_amount / 52
@@ -50,17 +69,19 @@ def decision_making_support():
                 st.write(
                     f"To meet your adjusted goal in one year, save an additional £{daily_contribution_adjusted:.2f} per day.")
 
-            # Suggest areas to save money
+            # Suggest areas to save money for the selected employee
             st.subheader("Consider the following to save money:")
 
             expenses_to_check = ['Sky Sports (£)', 'Netflix (£)', 'Amazon Prime (£)', 'Monthly Outing (£)']
+            suggestions_made = False
             for expense in expenses_to_check:
-                if expense in data.columns:
-                    non_zero_count = (data[expense] > 0).sum()
-                    if non_zero_count > 0:
-                        avg_expense = data[data[expense] > 0][expense].mean()
-                        st.write(f"- {expense[:-4]} (£{avg_expense:.2f}/month)")
-                        st.write(f"  Applies to {non_zero_count} out of {len(data)} employees")
+                if expense in employee_data.columns and employee_data[expense].iloc[0] > 0:
+                    expense_value = employee_data[expense].iloc[0]
+                    st.write(f"- {expense[:-4]} (£{expense_value:.2f}/month)")
+                    suggestions_made = True
+
+            if not suggestions_made:
+                st.write("No specific suggestions available based on current expenses.")
 
         else:
             st.success("You have met your adjusted savings goal!")

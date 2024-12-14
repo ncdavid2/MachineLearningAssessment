@@ -1,10 +1,16 @@
 import streamlit as st
 import pandas as pd
 import numpy as np
-import matplotlib.pyplot as plt
+import plotly.express as px
+from statsmodels.tsa.arima.model import ARIMA
+from sklearn.preprocessing import MinMaxScaler
+from tensorflow.python.keras.models import Sequential
+from tensorflow.python.keras.layers import LSTM, Dense
+from prophet import Prophet
+
 
 def prediction_forecasting():
-    st.title("Salary Prediction & Forecasting for Individual Employee")
+    st.title("Savings Prediction & Forecasting for Individual Employees")
 
     if 'uploaded_data' not in st.session_state:
         st.error("No data uploaded. Please upload a CSV file on the main page.")
@@ -14,7 +20,7 @@ def prediction_forecasting():
 
     if 'Employee' in data.columns:
         unique_employees = data['Employee'].unique()
-        selected_employee = st.selectbox("Select Employee for Prediction:", unique_employees)
+        selected_employee = st.selectbox("Select Employee for Predictions:", unique_employees)
 
         employee_data = data[data['Employee'] == selected_employee]
 
@@ -22,110 +28,123 @@ def prediction_forecasting():
             st.error("No data found for the selected employee.")
             return
 
-        current_monthly_income = employee_data['Monthly Income (£)'].iloc[0]
+        # Get initial monthly savings and expenses
+        current_monthly_savings = employee_data['Savings for Property (£)'].iloc[0]
+        current_monthly_expenses = employee_data['Monthly Income (£)'].iloc[0] - current_monthly_savings
+
+        # Display first month savings and expenses as non-editable fields
+        st.subheader("Initial Values (Month 1)")
+        st.write(f"Savings: £{current_monthly_savings:.2f}")
+        st.write(f"Expenses: £{current_monthly_expenses:.2f}")
+
+        # User input for changes in Savings and Expenses for the next 5 months (Month 2 to Month 6)
+        st.subheader("Input Changes for Next 5 Months")
+        changes = []
+        for i in range(5):  # Only 5 months of input fields
+            col1, col2 = st.columns(2)
+            with col1:
+                savings_change = st.number_input(f"Month {i + 2} Savings Change", value=current_monthly_savings,
+                                                 step=10.0)
+            with col2:
+                expenses_change = st.number_input(f"Month {i + 2} Expenses Change", value=current_monthly_expenses,
+                                                  step=10.0)
+            changes.append((savings_change, expenses_change))
+
+        # Generate synthetic data for 5 months starting from the first day of next month
+        next_month = pd.Timestamp.now() + pd.DateOffset(months=1)
+        next_month_start = next_month.replace(day=1)  # Set to the first day of the next month
+        dates = pd.date_range(start=next_month_start, periods=5, freq='M')
+
+        savings = [current_monthly_savings] * 5
+        expenses = [current_monthly_expenses] * 5
+
+        df = pd.DataFrame({'ds': dates, 'savings': savings, 'expenses': expenses})
+
+        # Add user input changes starting from Month 2
+        for i, (savings_change, expenses_change) in enumerate(changes):
+            new_date = df['ds'].iloc[-1] + pd.DateOffset(months=i + 1)
+            new_savings = df['savings'].iloc[
+                              -1] + savings_change - current_monthly_savings  # Adjust based on change input
+            new_expenses = df['expenses'].iloc[
+                               -1] + expenses_change - current_monthly_expenses  # Adjust based on change input
+            new_row = pd.DataFrame({'ds': [new_date], 'savings': [new_savings], 'expenses': [new_expenses]})
+            df = pd.concat([df, new_row], ignore_index=True)
+
+        # Model Predictions
+        predictions_summary = {}
+
+        # ARIMA Model
+        arima_model = ARIMA(df['savings'], order=(1, 1, 1))
+        arima_results = arima_model.fit()
+        arima_forecast = arima_results.forecast(steps=6)
+
+        predictions_summary['ARIMA Forecast'] = arima_forecast.values.tolist()
+
+        # LSTM Model
+        scaler = MinMaxScaler()
+        scaled_data = scaler.fit_transform(df[['savings', 'expenses']])
+
+        X, y = [], []
+        for i in range(len(scaled_data) - 6):
+            X.append(scaled_data[i:i + 6])
+            y.append(scaled_data[i + 6])
+
+        X, y = np.array(X), np.array(y)
+
+        model = Sequential([
+            LSTM(50, activation='relu', input_shape=(6, 2)),
+            Dense(2)
+        ])
+        model.compile(optimizer='adam', loss='mse')
+        model.fit(X, y, epochs=50, verbose=0)
+
+        last_6_months = scaled_data[-6:]
+        lstm_forecast = []
+
+        for _ in range(6):
+            next_month = model.predict(last_6_months.reshape(1, 6, 2))
+            lstm_forecast.append(next_month[0])
+            last_6_months = np.vstack((last_6_months[1:], next_month))
+
+        lstm_forecast_inv_scaled = scaler.inverse_transform(lstm_forecast)
+
+        predictions_summary['LSTM Forecast'] = lstm_forecast_inv_scaled[:, 0].tolist()
+
+        # Prophet Model
+        prophet_df = df[['ds', 'savings']].rename(columns={'savings': 'y'})
+        m = Prophet()
+        m.fit(prophet_df)
+        future = m.make_future_dataframe(periods=2, freq='ME')
+        forecast_prophet = m.predict(future)
+        predictions_summary['Prophet Forecast'] = forecast_prophet['yhat'].tail(6).values.tolist()
+
+        # Create DataFrame for plotting with adjusted future dates starting from five months from today
+        future_dates_arima_lstm = pd.date_range(start=pd.Timestamp.now() + pd.DateOffset(months=5), periods=6, freq='M')
+
+        plot_df = pd.DataFrame({
+            'Date': future_dates_arima_lstm,
+            'ARIMA Forecast': predictions_summary['ARIMA Forecast'],
+            'LSTM Forecast': predictions_summary['LSTM Forecast'],
+            'Prophet Forecast': predictions_summary['Prophet Forecast']
+        })
+
+        # Plotting using Plotly
+        fig = px.line(plot_df, x='Date',
+                      y=['ARIMA Forecast', 'LSTM Forecast', 'Prophet Forecast'],
+                      labels={'value': 'Savings (£)', 'variable': 'Model'},
+                      title=f"Savings Forecast for {selected_employee}")
+
+        st.plotly_chart(fig)
+
+        # Display predictions summary
+        st.subheader("Predictions Summary for Savings")
+
+        # summary with future dates
+        plot_df['Date'] += pd.DateOffset(months=0)
+        st.write(plot_df)
+
     else:
         st.warning("No 'Employee' column found in the data.")
-        return
-
-    # Display current monthly income (first month)
-    st.write(f"Month 1 Income for {selected_employee}: £{current_monthly_income:.2f}")
-
-    # Input fields for the second and third months
-    month2_income = st.number_input("Month 2 Income (£):", value=float(current_monthly_income), step=0.01)
-    month3_income = st.number_input("Month 3 Income (£):", value=float(current_monthly_income), step=0.01)
-
-    # Calculate average monthly change
-    avg_monthly_change = (month3_income - current_monthly_income) / 2
-
-    # Generate predictions for 48 months
-    forecasted_salaries = [current_monthly_income, month2_income, month3_income]
-    for month in range(4, 49):
-        next_salary = forecasted_salaries[-1] + avg_monthly_change
-        forecasted_salaries.append(next_salary)
-
-    # Display line chart
-    plt.figure(figsize=(16, 8))
-
-    x_values = range(1, 49)
-    plt.plot(x_values[:3], forecasted_salaries[:3], marker='o', linestyle='-', color='b', markersize=8, label='Input Months')
-    plt.plot(x_values[3:], forecasted_salaries[3:], marker='o', linestyle='-', color='green', markersize=8, label='Predicted Months')
-
-    plt.title(f"Forecasted Monthly Salaries for {selected_employee}", fontsize=20)
-    plt.xlabel("Month", fontsize=16)
-    plt.ylabel("Salary (£)", fontsize=16)
-    plt.xticks(x_values, [str(i) for i in x_values], fontsize=14, rotation=45)
-    plt.grid(True)
-    plt.legend()
-
-    max_salary = max(forecasted_salaries) * 1.1
-    min_salary = min(forecasted_salaries) * 0.9
-    plt.ylim(min_salary, max_salary)
-
-    st.pyplot(plt)
-
-    # Display predictions for years 1, 2, 3, and 4
-    st.subheader("Salary Predictions for Years 1-4")
-    col1, col2, col3, col4 = st.columns(4)
-
-    with col1:
-        st.write("Year 1 (Month 12)")
-        st.write(f"£{forecasted_salaries[0]:.2f}")
-        st.write(f"£{forecasted_salaries[1]:.2f}")
-        st.write(f"£{forecasted_salaries[2]:.2f}")
-        st.write(f"£{forecasted_salaries[3]:.2f}")
-        st.write(f"£{forecasted_salaries[4]:.2f}")
-        st.write(f"£{forecasted_salaries[5]:.2f}")
-        st.write(f"£{forecasted_salaries[6]:.2f}")
-        st.write(f"£{forecasted_salaries[7]:.2f}")
-        st.write(f"£{forecasted_salaries[8]:.2f}")
-        st.write(f"£{forecasted_salaries[9]:.2f}")
-        st.write(f"£{forecasted_salaries[10]:.2f}")
-        st.write(f"£{forecasted_salaries[11]:.2f}")
-
-    with col2:
-        st.write("Year 2 (Month 24)")
-        st.write(f"£{forecasted_salaries[12]:.2f}")
-        st.write(f"£{forecasted_salaries[13]:.2f}")
-        st.write(f"£{forecasted_salaries[14]:.2f}")
-        st.write(f"£{forecasted_salaries[15]:.2f}")
-        st.write(f"£{forecasted_salaries[16]:.2f}")
-        st.write(f"£{forecasted_salaries[17]:.2f}")
-        st.write(f"£{forecasted_salaries[18]:.2f}")
-        st.write(f"£{forecasted_salaries[19]:.2f}")
-        st.write(f"£{forecasted_salaries[20]:.2f}")
-        st.write(f"£{forecasted_salaries[21]:.2f}")
-        st.write(f"£{forecasted_salaries[22]:.2f}")
-        st.write(f"£{forecasted_salaries[23]:.2f}")
-
-    with col3:
-        st.write("Year 3 (Month 36)")
-        st.write(f"£{forecasted_salaries[24]:.2f}")
-        st.write(f"£{forecasted_salaries[25]:.2f}")
-        st.write(f"£{forecasted_salaries[26]:.2f}")
-        st.write(f"£{forecasted_salaries[27]:.2f}")
-        st.write(f"£{forecasted_salaries[28]:.2f}")
-        st.write(f"£{forecasted_salaries[29]:.2f}")
-        st.write(f"£{forecasted_salaries[30]:.2f}")
-        st.write(f"£{forecasted_salaries[31]:.2f}")
-        st.write(f"£{forecasted_salaries[32]:.2f}")
-        st.write(f"£{forecasted_salaries[33]:.2f}")
-        st.write(f"£{forecasted_salaries[34]:.2f}")
-        st.write(f"£{forecasted_salaries[35]:.2f}")
-
-    with col4:
-        st.write("Year 4 (Month 48)")
-        st.write(f"£{forecasted_salaries[36]:.2f}")
-        st.write(f"£{forecasted_salaries[37]:.2f}")
-        st.write(f"£{forecasted_salaries[38]:.2f}")
-        st.write(f"£{forecasted_salaries[39]:.2f}")
-        st.write(f"£{forecasted_salaries[40]:.2f}")
-        st.write(f"£{forecasted_salaries[41]:.2f}")
-        st.write(f"£{forecasted_salaries[42]:.2f}")
-        st.write(f"£{forecasted_salaries[43]:.2f}")
-        st.write(f"£{forecasted_salaries[44]:.2f}")
-        st.write(f"£{forecasted_salaries[45]:.2f}")
-        st.write(f"£{forecasted_salaries[46]:.2f}")
-        st.write(f"£{forecasted_salaries[47]:.2f}")
 
 if __name__ == "__main__":
     prediction_forecasting()
