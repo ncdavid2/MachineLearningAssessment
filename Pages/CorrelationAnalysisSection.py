@@ -1,13 +1,10 @@
 import streamlit as st
-import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
-import numpy as np
 
 def correlation_analysis():
     st.title("Correlation Analysis")
 
-    # Load data
     data = st.session_state['uploaded_data']
 
     # Select expense categories for analysis
@@ -30,3 +27,4 @@ def correlation_analysis():
 
 if __name__ == "__main__":
     correlation_analysis()
+

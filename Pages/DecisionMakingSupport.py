@@ -1,11 +1,9 @@
 import streamlit as st
 import pandas as pd
 
-
 def decision_making_support():
     st.title("Decision-Making Support")
 
-    # Load data
     if 'uploaded_data' in st.session_state:
         data = pd.DataFrame(st.session_state['uploaded_data'])
     else:
@@ -14,27 +12,23 @@ def decision_making_support():
 
     # Monthly Income
     st.subheader("Monthly Savings Analysis")
-    income_col = 'Monthly Income (£)'
+    income = 'Monthly Income (£)'
 
     if 'Employee' in data.columns:
         unique_employees = data['Employee'].unique()
         selected_employee = st.selectbox("Select Employee for Prediction:", unique_employees)
-
         employee_data = data[data['Employee'] == selected_employee]
 
         if employee_data.empty:
             st.error("No data found for the selected employee.")
             return
 
-        monthly_income = employee_data[income_col].iloc[0]
+        monthly_income = employee_data[income].iloc[0]
     else:
         st.warning("No 'Employee' column found in the data.")
         return
-
     try:
-        # Set Savings Goal
         savings_goal = st.number_input("Set Your Savings Target (£):", min_value=0.0, step=100.0)
-
     except Exception as e:
         st.error(f"Error retrieving monthly income: {e}")
 
@@ -88,7 +82,6 @@ def decision_making_support():
 
     except Exception as e:
         st.error(f"Real-time updates error: {e}")
-
 
 if __name__ == "__main__":
     decision_making_support()

@@ -8,8 +8,6 @@ from sklearn.decomposition import PCA
 
 def expense_clustering():
     st.title("Expense Clustering")
-
-    # Load data
     data = st.session_state['uploaded_data']
 
     # Select features for clustering
@@ -25,10 +23,8 @@ def expense_clustering():
     n_clusters = st.sidebar.slider("Number of Clusters", 2, 10, 3)
     model = KMeans(n_clusters=n_clusters, random_state=42)
 
-    # Fit model and get cluster labels
     labels = model.fit_predict(normalized_data)
 
-    # Perform PCA for visualization
     pca = PCA(n_components=2)
     pca_result = pca.fit_transform(normalized_data)
 
@@ -41,12 +37,10 @@ def expense_clustering():
         'Monthly Income (£)': data['Monthly Income (£)']
     })
 
-    # Plot clusters
     fig = px.scatter(plot_df, x='Expense Dimension 1', y='Expense Dimension 2',
                      color='Cluster', hover_data=['Employee', 'Monthly Income (£)'])
     st.plotly_chart(fig)
 
-    # Display cluster descriptions
     st.subheader("Cluster Descriptions")
     for cluster in np.unique(labels):
         cluster_data = data[labels == cluster]

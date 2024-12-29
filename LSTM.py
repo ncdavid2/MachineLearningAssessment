@@ -1,10 +1,6 @@
 import numpy as np
 import pandas as pd
-import plotly.graph_objects as go
 import streamlit as st
-from sklearn.preprocessing import MinMaxScaler
-from tensorflow.python.keras.models import Sequential
-from tensorflow.python.keras.layers import LSTM, Dense
 
 #to start the page use: streamlit run LSTM.py
 
@@ -12,7 +8,7 @@ from tensorflow.python.keras.layers import LSTM, Dense
 if "uploaded_data" not in st.session_state:
     st.session_state["uploaded_data"] = None
 
-#File Upload and Basic Validation
+# File Upload and Basic Validation
 st.title("Personal Finance Management System with LSTM and Interactive Features")
 
 uploaded_file = st.file_uploader("Upload your CSV file:", type=["csv"])
